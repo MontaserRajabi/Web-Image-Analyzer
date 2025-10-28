@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 import json
-import os
 
 VISION_API_KEY ="74zfy9oNEFghoq9YhWvdkz4P73G2fC9t3tfMqgqndVvwUhu7TX1MJQQJ99BJAC5T7U2XJ3w3AAAFACOGLsqX"
 VISION_ENDPOINT = "https://asdaasdasdads.cognitiveservices.azure.com/"
@@ -26,3 +25,4 @@ if uploaded_file:
 
         st.subheader("📊 Analysis Result (JSON)")
         st.json(result)
+
