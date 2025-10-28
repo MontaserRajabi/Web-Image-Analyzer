@@ -1,25 +1,28 @@
-from flask import Flask, jsonify, render_template, request
-import requests, json
+import streamlit as st
+import requests
+import json
+import os
 
-app = Flask(__name__)
+VISION_API_KEY ="74zfy9oNEFghoq9YhWvdkz4P73G2fC9t3tfMqgqndVvwUhu7TX1MJQQJ99BJAC5T7U2XJ3w3AAAFACOGLsqX"
+VISION_ENDPOINT = "https://asdaasdasdads.cognitiveservices.azure.com/"
+ANALYZE_URL = VISION_ENDPOINT + "/vision/v3.2/analyze"
 
-# === Azure Vision API credentials ===
-subscription_key = "74zfy9oNEFghoq9YhWvdkz4P73G2fC9t3tfMqgqndVvwUhu7TX1MJQQJ99BJAC5T7U2XJ3w3AAAFACOGLsqX"
-endpoint = "https://asdaasdasdads.cognitiveservices.azure.com/" 
-analyze_url = endpoint + "vision/v3.2/analyze"
+st.title("🔎 Azure Vision Image Analyzer")
 
-@app.route('/analyze', methods=['POST'])
-def analyze_image():
-    image = request.files['image'].read()
-    headers = {
-        'Ocp-Apim-Subscription-Key': subscription_key,
-        'Content-Type': 'application/octet-stream'
-    }
-    params = {
-        'visualFeatures': 'Categories,Description,Objects,Faces,Tags'
-    }
-    response = requests.post(analyze_url, headers=headers, params=params, data=image)
-    return jsonify(response.json())
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if uploaded_file:
+    image_data = uploaded_file.read()
+    st.image(image_data, caption="Uploaded Image", use_column_width=True)
+
+    if st.button("Analyze Image"):
+        headers = {
+            "Ocp-Apim-Subscription-Key": VISION_API_KEY,
+            "Content-Type": "application/octet-stream"
+        }
+        params = {"visualFeatures": "Objects,Faces,Tags,Description"}
+        response = requests.post(ANALYZE_URL, headers=headers, params=params, data=image_data)
+        result = response.json()
+
+        st.subheader("📊 Analysis Result (JSON)")
+        st.json(result)
